@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class QosDataParserDocx extends QosDataParser{
 
+    private String currentServiceClusterCode = "";
     /**
      * Constructor
      */
@@ -60,12 +61,14 @@ public class QosDataParserDocx extends QosDataParser{
         List<XWPFTableRow> rows = table.getRows();
         int i = 0;
         //Property to keep track of the current cluster that is being imported
-        String currentServiceClusterCode = "";
-
+        this.currentServiceClusterCode = "";
+        int serviceCount = 0;
         for(XWPFTableRow row : rows) {
             //ignore header
             if(i > 0){
-                currentServiceClusterCode = this.importCells(row, currentServiceClusterCode);
+                if(this.importCells(row, serviceCount)){
+                    serviceCount++;
+                }
             }
             i++;
         };
@@ -74,10 +77,9 @@ public class QosDataParserDocx extends QosDataParser{
     /**
      * Import all the cells in a Row. It loops over every cells and adds each property to a service. At the end it adds the new service to it's cluster
      * @param row
-     * @param currentServiceClusterCode
      * @return
      */
-    private String importCells(XWPFTableRow row, String currentServiceClusterCode){
+    private Boolean importCells(XWPFTableRow row, int serviceCount){
         List<XWPFTableCell> cells = row.getTableCells();
         ServiceCluster currentServiceCluster = null;
         Service service = new Service();
@@ -87,16 +89,17 @@ public class QosDataParserDocx extends QosDataParser{
             if(i == 0){
                 service = new Service();
                 if(cell.getText().compareTo("") != 0){
-                    currentServiceClusterCode = cell.getText().toString();
-                    this.initServiceCluster(currentServiceClusterCode);
-                    currentServiceCluster = this.getServiceClusters().get(currentServiceClusterCode);
+                    this.currentServiceClusterCode = cell.getText().toString();
+                    this.initServiceCluster(this.currentServiceClusterCode);
+                    currentServiceCluster = this.getServiceClusters().get(this.currentServiceClusterCode);
                 }else{
-                    currentServiceCluster = this.getServiceClusters().get(currentServiceClusterCode);
+                    currentServiceCluster = this.getServiceClusters().get(this.currentServiceClusterCode);
                 }
             }else{
                 //add every property to a Service, one string and all float properties
                 if(i == 1){
                     service.setCode(cell.getText().toString());
+                    service.setPosition(serviceCount);
                 }else{
                     float value = Float.parseFloat(cell.getText().toString());
                     if(i == 2){
@@ -119,16 +122,17 @@ public class QosDataParserDocx extends QosDataParser{
             }
             i++;
 
-            //save current service cluster in list
+            //save service in current service cluster
             if(i >= cells.size()){
                 currentServiceCluster.addService(service);
                 currentServiceCluster.increaseTotalCost(service.getCost());
                 currentServiceCluster.increaseTotalResponseTime(service.getResponseTime());
-                this.getServiceClusters().replace(currentServiceClusterCode, currentServiceCluster);
+                this.getServiceClusters().replace(this.currentServiceClusterCode, currentServiceCluster);
+                return true;
             }
         }
 
-        return currentServiceClusterCode;
+        return false;
     }
 
 

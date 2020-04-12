@@ -7,6 +7,8 @@ public class Service {
 
     // Service Code - S11
     private String code = "";
+    // Service Position for bit translation
+    private int position = 0;
     // Service cost - 2
     private float cost = 0;
     // Service reliability - 90
@@ -16,10 +18,8 @@ public class Service {
     // Service availability - 90
     private float availability = 0;
 
-  /**
-   * Instantiates a new Service.
-   */
-    public Service() {}
+  /** Instantiates a new Service. */
+  public Service() {}
 
   /**
    * Gets code.
@@ -109,5 +109,23 @@ public class Service {
    */
   public void setAvailability(float availability) {
         this.availability = availability;
+    }
+
+  /**
+   * Gets position.
+   *
+   * @return the position
+   */
+  public int getPosition() {
+        return position;
+    }
+
+  /**
+   * Sets position.
+   *
+   * @param position the position
+   */
+  public void setPosition(int position) {
+        this.position = position;
     }
 }
