@@ -6,17 +6,18 @@ import java.util.List;
 /**
  * The type Service cluster.
  *
- * Represents a service cluster. Each service cluster has a 3 attributes: list of services and a totalCost and totalResponseTime.
- * These last two attributes are used to store the sum of the costs and response times of all the services in the cluster.
- * These two values will be used for normalization *
- *
- * */
+ * <p>Represents a service cluster. Each service cluster has a 3 attributes: list of services and a
+ * totalCost and totalResponseTime. These last two attributes are used to store the sum of the costs
+ * and response times of all the services in the cluster. These two values will be used for
+ * normalization *
+ */
 public class ServiceCluster {
     private String serviceClusterCode = "";
     private List<Service> services;
 
     private float totalCost = 0;
     private float totalResponseTime = 0;
+    private int totalItems = 0;
 
   /**
    * Instantiates a new Service cluster.
@@ -58,7 +59,7 @@ public class ServiceCluster {
   /**
    * Gets service list in this cluster
    *
-   * @return services
+   * @return services services
    */
   public List<Service> getServices() {
         return services;
@@ -100,5 +101,19 @@ public class ServiceCluster {
         this.totalResponseTime += responseTime;
     }
 
+  /**
+   * Gets total items.
+   *
+   * @return the total items
+   */
+  public int getTotalItems() {
+        return totalItems;
+    }
 
+  /**
+   * Increases total items
+   */
+  public void increaseTotalItems() {
+        this.totalItems++;
+    }
 }

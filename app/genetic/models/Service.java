@@ -7,8 +7,12 @@ public class Service {
 
     // Service Code - S11
     private String code = "";
+    // Service Cluster Code - SC1
+    private String serviceClusterCode = "";
     // Service Position for bit translation
     private int position = 0;
+    // Service Position in Cluster for bit translation
+    private int positionInCluster = 0;
     // Service cost - 2
     private float cost = 0;
     // Service reliability - 90
@@ -127,5 +131,41 @@ public class Service {
    */
   public void setPosition(int position) {
         this.position = position;
+    }
+
+  /**
+   * Gets service cluster code.
+   *
+   * @return the service cluster code
+   */
+  public String getServiceClusterCode() {
+        return serviceClusterCode;
+    }
+
+  /**
+   * Sets service cluster code.
+   *
+   * @param serviceClusterCode the service cluster code
+   */
+  public void setServiceClusterCode(String serviceClusterCode) {
+        this.serviceClusterCode = serviceClusterCode;
+    }
+
+  /**
+   * Gets position in cluster.
+   *
+   * @return the position in cluster
+   */
+  public int getPositionInCluster() {
+        return positionInCluster;
+    }
+
+  /**
+   * Sets position in cluster.
+   *
+   * @param positionInCluster the position in cluster
+   */
+  public void setPositionInCluster(int positionInCluster) {
+        this.positionInCluster = positionInCluster;
     }
 }

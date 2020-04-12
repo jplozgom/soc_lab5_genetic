@@ -100,6 +100,8 @@ public class QosDataParserDocx extends QosDataParser{
                 if(i == 1){
                     service.setCode(cell.getText().toString());
                     service.setPosition(serviceCount);
+                    service.setServiceClusterCode(this.currentServiceClusterCode);
+                    service.setPositionInCluster(currentServiceCluster.getTotalItems());
                 }else{
                     float value = Float.parseFloat(cell.getText().toString());
                     if(i == 2){
@@ -127,6 +129,7 @@ public class QosDataParserDocx extends QosDataParser{
                 currentServiceCluster.addService(service);
                 currentServiceCluster.increaseTotalCost(service.getCost());
                 currentServiceCluster.increaseTotalResponseTime(service.getResponseTime());
+                currentServiceCluster.increaseTotalItems();
                 this.getServiceClusters().replace(this.currentServiceClusterCode, currentServiceCluster);
                 return true;
             }
@@ -134,7 +137,4 @@ public class QosDataParserDocx extends QosDataParser{
 
         return false;
     }
-
-
-
 }
