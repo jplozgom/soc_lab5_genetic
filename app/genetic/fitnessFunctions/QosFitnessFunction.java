@@ -98,7 +98,8 @@ public class QosFitnessFunction extends FitnessFunction {
         float availability = this.calculateAvailability(s1.getAvailability() , s2.getAvailability() , s3.getAvailability());
 
         //5. Calculate QoS using the weight of each attribute. Cost and response time have an inverse effect, this means that the lower the better
-        return (1 - cost) * QosFitnessFunction.WEIGHT_COST / 100 + (1 - responseTime) * QosFitnessFunction.WEIGHT_RESPONSE_TIME / 100 + reliability * QosFitnessFunction.WEIGHT_RELIABILITY / 100 + availability * QosFitnessFunction.WEIGHT_AVAILABILITY / 100;
+        return (1 - cost) * QosFitnessFunction.WEIGHT_COST / 100 + (1 - responseTime) * QosFitnessFunction.WEIGHT_RESPONSE_TIME / 100 + reliability
+                * QosFitnessFunction.WEIGHT_RELIABILITY / 100 + availability * QosFitnessFunction.WEIGHT_AVAILABILITY / 100;
     }
 
     /**
@@ -109,7 +110,7 @@ public class QosFitnessFunction extends FitnessFunction {
      * @return
      */
     private float calculateReliability(float rel1, float rel2, float rel3){
-        return Math.min(rel3, Math.min(rel1, rel1 * rel2));
+        return Math.min(rel3, Math.min(rel1, rel2) * rel1);
     }
 
     /**
@@ -120,7 +121,7 @@ public class QosFitnessFunction extends FitnessFunction {
      * @return
      */
     private float calculateAvailability(float av1, float av2, float av3){
-        return Math.min(av3, Math.min(av1, av1 * av2));
+        return Math.min(av3, Math.min(av1, av2) * av2);
     }
 
   /**

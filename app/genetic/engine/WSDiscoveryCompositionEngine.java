@@ -49,22 +49,17 @@ public class WSDiscoveryCompositionEngine {
 
         FitnessFunction myFunc = qosFitnessFunction;
         conf.setFitnessFunction(myFunc);
-//        if (a_doMonitor) {
-//            // Turn on monitoring/auditing of evolution progress.
-//            // --------------------------------------------------
-//            m_monitor = new EvolutionMonitor();
-//            conf.setMonitor(m_monitor);
-//        }
+
         // Now we need to tell the Configuration object how we want our
         // Chromosomes to be setup. We do that by actually creating a
         // sample Chromosome and then setting it on the Configuration
-        // object. As mentioned earlier, we want our Chromosomes to each
-        // have four genes, one for each of the coin types. We want the
+        // object. Ee want our Chromosomes to each
+        // have 3 genes, one for each Service Cluster. We want the
         // values (alleles) of those genes to be integers, which represent
-        // how many coins of that type we have. We therefore use the
+        // one option in each cluster. We therefore use the
         // IntegerGene class to represent each of the genes. That class
         // also lets us specify a lower and upper bound, which we set
-        // to sensible values for each coin type.
+        // to 0 and the size of the elements in each cluster.
         // --------------------------------------------------------------
         ServiceCluster sc1 = serviceClusters.get("SC1");
         ServiceCluster sc2 = serviceClusters.get("SC2");
@@ -83,11 +78,9 @@ public class WSDiscoveryCompositionEngine {
         // finding the answer), but the longer it will take to evolve
         // the population (which could be seen as bad).
         // ------------------------------------------------------------
-        conf.setPopulationSize(10); // 5 * 3 * 8  ---- 5 options in SC1 x 3 options in SC2 x 8 options in SC3
+        conf.setPopulationSize(20);
 
         // Create random initial population of Chromosomes.
-        // Here we try to read in a previous run via XMLManager.readFile(..)
-        // for demonstration purpose only!
         // -----------------------------------------------------------------
         Genotype population;
         // Now we initialize the population randomly, anyway (as an example only)!
@@ -109,8 +102,7 @@ public class WSDiscoveryCompositionEngine {
             }
         }
         long endTime = System.currentTimeMillis();
-        System.out.println("Total evolution time: " + (endTime - startTime)
-                + " ms");
+        System.out.println("Total evolution time: " + (endTime - startTime) + " ms");
 
         IChromosome bestSolutionSoFar = population.getFittestChromosome();
         double score = bestSolutionSoFar.getFitnessValue();
@@ -122,49 +114,7 @@ public class WSDiscoveryCompositionEngine {
 
         return new WebServiceWorkflow(sc1.getServices().get(service_SC1_id), sc2.getServices().get(service_SC2_id), sc3.getServices().get(service_SC3_id), score);
 
-        // Save progress to file. A new run of this example will then be able to
-        // resume where it stopped before! --> this is completely optional.
-        // ---------------------------------------------------------------------
 
-//        // Represent Genotype as tree with elements Chromomes and Genes.
-//        // -------------------------------------------------------------
-//        DataTreeBuilder builder = DataTreeBuilder.getInstance();
-//        IDataCreators doc2 = builder.representGenotypeAsDocument(population);
-//        // create XML document from generated tree
-//        XMLDocumentBuilder docbuilder = new XMLDocumentBuilder();
-//        Document xmlDoc = (Document) docbuilder.buildDocument(doc2);
-//        XMLManager.writeFile(xmlDoc, new File("JGAPExample26.xml"));
-//        // Display the best solution we found.
-//        // -----------------------------------
-//        IChromosome bestSolutionSoFar = population.getFittestChromosome();
-//        double v1 = bestSolutionSoFar.getFitnessValue();
-//        System.out.println("The best solution has a fitness value of " +
-//                bestSolutionSoFar.getFitnessValue());
-//        bestSolutionSoFar.setFitnessValueDirectly(-1);
-//        System.out.println("It contains the following: ");
-//        System.out.println("\t" +
-//                MinimizingMakeChangeFitnessFunction.
-//                        getNumberOfCoinsAtGene(
-//                                bestSolutionSoFar, 0) + " quarters.");
-//        System.out.println("\t" +
-//                MinimizingMakeChangeFitnessFunction.
-//                        getNumberOfCoinsAtGene(
-//                                bestSolutionSoFar, 1) + " dimes.");
-//        System.out.println("\t" +
-//                MinimizingMakeChangeFitnessFunction.
-//                        getNumberOfCoinsAtGene(
-//                                bestSolutionSoFar, 2) + " nickels.");
-//        System.out.println("\t" +
-//                MinimizingMakeChangeFitnessFunction.
-//                        getNumberOfCoinsAtGene(
-//                                bestSolutionSoFar, 3) + " pennies.");
-//        System.out.println("For a total of " +
-//                MinimizingMakeChangeFitnessFunction.amountOfChange(
-//                        bestSolutionSoFar) + " cents in " +
-//                MinimizingMakeChangeFitnessFunction.
-//                        getTotalNumberOfCoins(
-//                                bestSolutionSoFar) + " coins.");
-//        return null;
     }
 
     /**

@@ -29,7 +29,8 @@ public class Console {
         WSDiscoveryCompositionEngine compositionEngine = new WSDiscoveryCompositionEngine();
         try {
             WebServiceWorkflow webServiceWorkflow = compositionEngine.composeServiceWorkflow(true, serviceClusters);
-            System.out.println(webServiceWorkflow.getSc1Service().getCode() + "->" + webServiceWorkflow.getSc2Service().getCode()+ "->" + webServiceWorkflow.getSc3Service().getCode());
+
+            System.out.println("\n\n" + webServiceWorkflow.getSc1Service().getCode() + "->" + webServiceWorkflow.getSc2Service().getCode()+ "->" + webServiceWorkflow.getSc3Service().getCode());
             System.out.println("Score = " + webServiceWorkflow.getScore());
             System.out.println("\n");
 
