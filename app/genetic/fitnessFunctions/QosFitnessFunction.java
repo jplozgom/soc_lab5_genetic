@@ -75,7 +75,8 @@ public class QosFitnessFunction extends FitnessFunction {
     }
 
   /**
-   * Calculate qo s double.
+   * Calculate the qos.
+   * Before doing the calculation it normalizes the cost and response time using the total costs and total response time from every cluster
    *
    * @param s1 the s 1
    * @param s2 the s 2
@@ -96,7 +97,7 @@ public class QosFitnessFunction extends FitnessFunction {
         //4. Calculate availability of flow
         float availability = this.calculateAvailability(s1.getAvailability() , s2.getAvailability() , s3.getAvailability());
 
-        //5. Calculate QoS using the weight of each attribute
+        //5. Calculate QoS using the weight of each attribute. Cost and response time have an inverse effect, this means that the lower the better
         return (1 - cost) * QosFitnessFunction.WEIGHT_COST / 100 + (1 - responseTime) * QosFitnessFunction.WEIGHT_RESPONSE_TIME / 100 + reliability * QosFitnessFunction.WEIGHT_RELIABILITY / 100 + availability * QosFitnessFunction.WEIGHT_AVAILABILITY / 100;
     }
 

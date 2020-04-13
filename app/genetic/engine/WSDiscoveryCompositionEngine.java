@@ -98,7 +98,7 @@ public class WSDiscoveryCompositionEngine {
         // is going to be, we just evolve the max number of times.
         // ---------------------------------------------------------------
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 100; i++) {
             if (!uniqueChromosomes(population.getPopulation())) {
                 throw new RuntimeException("Invalid state in generation " + i);
             }

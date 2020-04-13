@@ -21,17 +21,26 @@ public class Console {
         String path = new File("").getAbsolutePath();
         qosDataParser.setFileName(path + "/data/Lab Sample Input.docx");
         HashMap<String, ServiceCluster> serviceClusters = qosDataParser.parseDataFromFile();
-        System.out.println(serviceClusters.size());
+
+        //random test for fitness function
+        // Console.randomTest(serviceClusters);
 
         WSDiscoveryCompositionEngine compositionEngine = new WSDiscoveryCompositionEngine();
         try {
             List<Service> bestServices = compositionEngine.composeServiceWorkflow(true, serviceClusters);
             System.out.println(bestServices.get(0).getCode() + "->" + bestServices.get(1).getCode()+ "->" + bestServices.get(2).getCode());
             System.out.println("\n");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    /**
+     *
+     * @param serviceClusters
+     */
+    public static void randomTest(HashMap<String, ServiceCluster> serviceClusters ){
 
         QosFitnessFunction qosFitnessFunction = new QosFitnessFunction();
 
@@ -57,5 +66,6 @@ public class Console {
         System.out.println(s1f.getCode() + "->" + s2f.getCode()+ "->" + s3f.getCode());
         System.out.println(bestScore);
         System.out.println("\n");
+
     }
 }
