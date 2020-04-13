@@ -1,4 +1,5 @@
 package genetic.models;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /** The type Service. */
 public class Service {
@@ -10,16 +11,22 @@ public class Service {
     // Service Cluster Code - SC1
     private String serviceClusterCode = "";
     // Service Position for bit translation
+    @JsonIgnore
     private int position = 0;
     // Service Position in Cluster for bit translation
+    @JsonIgnore
     private int positionInCluster = 0;
     // Service cost - 2
+    @JsonIgnore
     private float cost = 0;
     // Service reliability - 90
+    @JsonIgnore
     private float reliability = 0;
     // Service response time - 3
+    @JsonIgnore
     private float responseTime = 0;
     // Service availability - 90
+    @JsonIgnore
     private float availability = 0;
 
   /** Instantiates a new Service. */

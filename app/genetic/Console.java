@@ -3,6 +3,7 @@ package genetic;
 import genetic.Parsers.QosDataParser;
 import genetic.Parsers.QosDataParserDocx;
 import genetic.engine.WSDiscoveryCompositionEngine;
+import genetic.engine.WebServiceWorkflow;
 import genetic.fitnessFunctions.QosFitnessFunction;
 import genetic.models.Service;
 import genetic.models.ServiceCluster;
@@ -27,8 +28,9 @@ public class Console {
 
         WSDiscoveryCompositionEngine compositionEngine = new WSDiscoveryCompositionEngine();
         try {
-            List<Service> bestServices = compositionEngine.composeServiceWorkflow(true, serviceClusters);
-            System.out.println(bestServices.get(0).getCode() + "->" + bestServices.get(1).getCode()+ "->" + bestServices.get(2).getCode());
+            WebServiceWorkflow webServiceWorkflow = compositionEngine.composeServiceWorkflow(true, serviceClusters);
+            System.out.println(webServiceWorkflow.getSc1Service().getCode() + "->" + webServiceWorkflow.getSc2Service().getCode()+ "->" + webServiceWorkflow.getSc3Service().getCode());
+            System.out.println("Score = " + webServiceWorkflow.getScore());
             System.out.println("\n");
 
         } catch (Exception e) {

@@ -28,7 +28,7 @@ public class WSDiscoveryCompositionEngine {
 
     public static EvolutionMonitor m_monitor;
 
-    public List<Service> composeServiceWorkflow (boolean a_doMonitor, HashMap<String, ServiceCluster> serviceClusters) throws Exception {
+    public WebServiceWorkflow composeServiceWorkflow (boolean a_doMonitor, HashMap<String, ServiceCluster> serviceClusters) throws Exception {
         // Start with a DefaultConfiguration, which comes setup with the
         // most common settings.
         // -------------------------------------------------------------
@@ -113,19 +113,14 @@ public class WSDiscoveryCompositionEngine {
                 + " ms");
 
         IChromosome bestSolutionSoFar = population.getFittestChromosome();
-        double v1 = bestSolutionSoFar.getFitnessValue();
-        System.out.println("Best Score: " + (v1) + "");
+        double score = bestSolutionSoFar.getFitnessValue();
+        System.out.println("Best Score: " + (score) + "");
 
         int service_SC1_id = (Integer) bestSolutionSoFar.getGene(0).getAllele();
         int service_SC2_id = (Integer) bestSolutionSoFar.getGene(1).getAllele();
         int service_SC3_id = (Integer) bestSolutionSoFar.getGene(2).getAllele();
 
-        ArrayList<Service> finalServices = new ArrayList<>();
-        finalServices.add(sc1.getServices().get(service_SC1_id));
-        finalServices.add(sc2.getServices().get(service_SC2_id));
-        finalServices.add(sc3.getServices().get(service_SC3_id));
-
-        return finalServices;
+        return new WebServiceWorkflow(sc1.getServices().get(service_SC1_id), sc2.getServices().get(service_SC2_id), sc3.getServices().get(service_SC3_id), score);
 
         // Save progress to file. A new run of this example will then be able to
         // resume where it stopped before! --> this is completely optional.
