@@ -11,6 +11,8 @@ libraryDependencies += guice
 // https://mvnrepository.com/artifact/org.apache.poi/poi
 libraryDependencies += "org.apache.poi" % "poi-ooxml" % "4.1.2"
 
-// https://mvnrepository.com/artifact/net.sf.jgap/jgap
-libraryDependencies += "net.sf.jgap" % "jgap" % "3.4.4"
+//// https://mvnrepository.com/artifact/net.sf.jgap/jgap
+//libraryDependencies += "net.sf.jgap" % "jgap" % "3.4.4"
 
+// https://mvnrepository.com/artifact/cn.apiclub.third/jgap
+libraryDependencies += "cn.apiclub.third" % "jgap" % "3.6.2"

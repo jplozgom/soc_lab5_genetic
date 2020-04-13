@@ -2,19 +2,33 @@ package genetic.engine;
 
 import genetic.fitnessFunctions.QosFitnessFunction;
 import genetic.models.Service;
+import genetic.models.ServiceCluster;
 import org.jgap.*;
 import org.jgap.impl.DefaultConfiguration;
 import org.jgap.impl.IntegerGene;
-import org.jgap.xml.XMLManager;
-import org.w3c.dom.Document;
+import java.io.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import org.jgap.*;
+import org.jgap.audit.*;
+import org.jgap.data.*;
+import org.jgap.impl.*;
+import org.jgap.xml.*;
+import org.w3c.dom.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class WSDiscoveryCompositionEngine {
 
-    public List<Service> composeServiceWorkflow (int minQoS, boolean a_doMonitor) throws Exception {
+    /**
+     * The total number of times we'll let the population evolve.
+     */
+    private static final int MAX_ALLOWED_EVOLUTIONS = 50;
+
+    public static EvolutionMonitor m_monitor;
+
+    public List<Service> composeServiceWorkflow (boolean a_doMonitor, HashMap<String, ServiceCluster> serviceClusters) throws Exception {
         // Start with a DefaultConfiguration, which comes setup with the
         // most common settings.
         // -------------------------------------------------------------
@@ -30,7 +44,10 @@ public class WSDiscoveryCompositionEngine {
         // MinimizingMakeChangeFitnessFunction. We construct it with
         // the target amount of change passed in to this method.
         // ---------------------------------------------------------
-        FitnessFunction myFunc = new QosFitnessFunction();
+        QosFitnessFunction qosFitnessFunction = new QosFitnessFunction();
+        qosFitnessFunction.setServiceClusters(serviceClusters);
+
+        FitnessFunction myFunc = qosFitnessFunction;
         conf.setFitnessFunction(myFunc);
 //        if (a_doMonitor) {
 //            // Turn on monitoring/auditing of evolution progress.
@@ -49,10 +66,15 @@ public class WSDiscoveryCompositionEngine {
         // also lets us specify a lower and upper bound, which we set
         // to sensible values for each coin type.
         // --------------------------------------------------------------
-        Gene[] sampleGenes = new Gene[4];
-        sampleGenes[0] = new IntegerGene(conf, 0, 5); // SC1
-        sampleGenes[1] = new IntegerGene(conf, 0, 2); // SC2
-        sampleGenes[2] = new IntegerGene(conf, 0, 8); // SC3
+        ServiceCluster sc1 = serviceClusters.get("SC1");
+        ServiceCluster sc2 = serviceClusters.get("SC2");
+        ServiceCluster sc3 = serviceClusters.get("SC3");
+
+        Gene[] sampleGenes = new Gene[3];
+        sampleGenes[0] = new IntegerGene(conf, 0, sc1.getServices().size() - 1); // SC1
+        sampleGenes[1] = new IntegerGene(conf, 0, sc2.getServices().size() - 1); // SC2
+        sampleGenes[2] = new IntegerGene(conf, 0, sc3.getServices().size() - 1); // SC3
+
         IChromosome sampleChromosome = new Chromosome(conf, sampleGenes);
         conf.setSampleChromosome(sampleChromosome);
         // Finally, we need to tell the Configuration object how many
@@ -61,23 +83,13 @@ public class WSDiscoveryCompositionEngine {
         // finding the answer), but the longer it will take to evolve
         // the population (which could be seen as bad).
         // ------------------------------------------------------------
-        conf.setPopulationSize(20);
+        conf.setPopulationSize(10); // 5 * 3 * 8  ---- 5 options in SC1 x 3 options in SC2 x 8 options in SC3
 
         // Create random initial population of Chromosomes.
         // Here we try to read in a previous run via XMLManager.readFile(..)
         // for demonstration purpose only!
         // -----------------------------------------------------------------
         Genotype population;
-        try {
-            Document doc = XMLManager.readFile(new File("JGAPExample32.xml"));
-            population = XMLManager.getGenotypeFromDocument(conf, doc);
-        } catch (UnsupportedRepresentationException uex) {
-            // JGAP codebase might have changed between two consecutive runs.
-            // --------------------------------------------------------------
-            population = Genotype.randomInitialGenotype(conf);
-        } catch (FileNotFoundException fex) {
-            population = Genotype.randomInitialGenotype(conf);
-        }
         // Now we initialize the population randomly, anyway (as an example only)!
         // If you want to load previous results from file, remove the next line!
         // -----------------------------------------------------------------------
@@ -86,19 +98,35 @@ public class WSDiscoveryCompositionEngine {
         // is going to be, we just evolve the max number of times.
         // ---------------------------------------------------------------
         long startTime = System.currentTimeMillis();
-//        for (int i = 0; i < 500; i++) {
-//            if (!uniqueChromosomes(population.getPopulation())) {
-//                throw new RuntimeException("Invalid state in generation " + i);
-//            }
-//            if (m_monitor != null) {
-//                population.evolve(m_monitor);
-//            } else {
-//                population.evolve();
-//            }
-//        }
+        for (int i = 0; i < 500; i++) {
+            if (!uniqueChromosomes(population.getPopulation())) {
+                throw new RuntimeException("Invalid state in generation " + i);
+            }
+            if (m_monitor != null) {
+                population.evolve(m_monitor);
+            } else {
+                population.evolve();
+            }
+        }
         long endTime = System.currentTimeMillis();
         System.out.println("Total evolution time: " + (endTime - startTime)
                 + " ms");
+
+        IChromosome bestSolutionSoFar = population.getFittestChromosome();
+        double v1 = bestSolutionSoFar.getFitnessValue();
+        System.out.println("Best Score: " + (v1) + "");
+
+        int service_SC1_id = (Integer) bestSolutionSoFar.getGene(0).getAllele();
+        int service_SC2_id = (Integer) bestSolutionSoFar.getGene(1).getAllele();
+        int service_SC3_id = (Integer) bestSolutionSoFar.getGene(2).getAllele();
+
+        ArrayList<Service> finalServices = new ArrayList<>();
+        finalServices.add(sc1.getServices().get(service_SC1_id));
+        finalServices.add(sc2.getServices().get(service_SC2_id));
+        finalServices.add(sc3.getServices().get(service_SC3_id));
+
+        return finalServices;
+
         // Save progress to file. A new run of this example will then be able to
         // resume where it stopped before! --> this is completely optional.
         // ---------------------------------------------------------------------
@@ -141,7 +169,27 @@ public class WSDiscoveryCompositionEngine {
 //                MinimizingMakeChangeFitnessFunction.
 //                        getTotalNumberOfCoins(
 //                                bestSolutionSoFar) + " coins.");
-        return null;
+//        return null;
+    }
+
+    /**
+     * @param a_pop the population to verify
+     * @return true if all chromosomes in the populationa are unique
+     * @author Klaus Meffert
+     * @since 3.3.1
+     */
+    public static boolean uniqueChromosomes(Population a_pop) {
+        // Check that all chromosomes are unique
+        for (int i = 0; i < a_pop.size() - 1; i++) {
+            IChromosome c = a_pop.getChromosome(i);
+            for (int j = i + 1; j < a_pop.size(); j++) {
+                IChromosome c2 = a_pop.getChromosome(j);
+                if (c == c2) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }
